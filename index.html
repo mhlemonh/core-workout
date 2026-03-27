@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>核心覺醒</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="核心覺醒">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230a0a0f'/%3E%3Ctext x='256' y='330' font-size='280' text-anchor='middle'%3E💪%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="科學化徒手核心訓練，每週 2–3 次，初中高階漸進解鎖">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --accent: #e8ff4a;
+    --accent2: #ff6b35;
+    --accent3: #4affda;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: #2a2a3a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Serif TC', serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 max(20px, env(safe-area-inset-left)) 0 max(20px, env(safe-area-inset-right)); padding-bottom: env(safe-area-inset-bottom); position: relative; z-index: 1; }
+
+  /* ─── HERO ─── */
+  .hero { padding: 60px 0 36px; text-align: center; }
+  .badge { display: inline-block; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); border: 1px solid var(--accent); padding: 5px 14px; margin-bottom: 24px; animation: fd 0.6s ease both; }
+  .hero h1 { font-size: clamp(2.2rem, 7vw, 4.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1.1; animation: fd 0.7s ease 0.1s both; }
+  .hero h1 em { color: var(--accent); font-style: normal; display: block; }
+  .hero-sub { margin-top: 16px; color: var(--muted); font-size: 0.9rem; line-height: 1.8; max-width: 460px; margin-inline: auto; animation: fd 0.7s ease 0.2s both; }
+
+  /* ─── SCIENCE BANNER ─── */
+  .science-bar {
+    display: flex; gap: 0; margin: 32px 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+    animation: fu 0.5s ease 0.3s both;
+  }
+  .sci-item { flex: 1; padding: 16px 12px; text-align: center; border-right: 1px solid var(--border); }
+  .sci-item:last-child { border-right: none; }
+  .sci-val { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); display: block; }
+  .sci-lbl { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; margin-top: 4px; display: block; }
+
+  /* ─── WEEK SCHEDULE ─── */
+  .week-bar { display: flex; gap: 6px; margin: 0 0 32px; animation: fu 0.5s ease both; flex-wrap: wrap; }
+  .day-dot {
+    flex: 1; min-width: 44px; padding: 10px 4px; text-align: center; border-radius: 3px;
+    border: 1px solid var(--border); font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 1px; color: var(--muted); transition: all 0.3s;
+  }
+  .day-dot.train { border-color: var(--accent); color: var(--accent); background: rgba(232,255,74,0.06); }
+  .day-dot.rest-day { border-color: var(--accent3); color: var(--accent3); background: rgba(74,255,218,0.05); }
+  .day-dot.today-mark { box-shadow: 0 0 0 2px var(--accent2); }
+  .day-dot .d-label { display: block; font-size: 9px; margin-bottom: 4px; }
+  .day-dot .d-type { display: block; font-size: 11px; font-weight: 700; }
+
+  /* ─── PROGRESS ─── */
+  .prog-track { margin-bottom: 28px; animation: fu 0.5s ease both; }
+  .prog-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+  .prog-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: visible; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent3)); border-radius: 2px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); position: relative; }
+  .prog-fill::after { content: ''; position: absolute; right: -5px; top: -5px; width: 13px; height: 13px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+
+  /* ─── TABS ─── */
+  .phase-tabs { display: flex; gap: 3px; background: var(--surface); padding: 4px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 28px; animation: fu 0.5s ease both; }
+  .ptab { flex: 1; padding: 10px 6px; text-align: center; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); border-radius: 2px; transition: all 0.3s; }
+  .ptab.active { background: var(--accent); color: var(--bg); font-weight: 700; }
+  .ptab.unlocked { color: var(--text); cursor: pointer; }
+  .ptab.unlocked:hover { background: var(--card); }
+
+  /* ─── UNLOCK CRITERIA ─── */
+  .unlock-info {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent3);
+    padding: 16px 20px; margin-bottom: 24px; border-radius: 0 4px 4px 0; font-size: 0.82rem;
+    color: var(--muted); line-height: 1.7; animation: fu 0.5s ease 0.1s both;
+  }
+  .unlock-info strong { color: var(--accent3); }
+  .criteria-list { margin-top: 8px; }
+  .criteria-item { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .crit-check { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.3s; }
+  .crit-check.met { background: var(--accent3); border-color: var(--accent3); color: var(--bg); }
+  .crit-text { font-size: 0.8rem; }
+
+  /* ─── SECTION HEADER ─── */
+  .sec-hdr { margin-bottom: 20px; animation: fu 0.5s ease both; }
+  .sec-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent2); text-transform: uppercase; margin-bottom: 6px; }
+  .sec-title { font-size: 1.5rem; font-weight: 700; }
+
+  /* ─── EXERCISE CARDS ─── */
+  .ex-grid { display: grid; gap: 14px; margin-bottom: 32px; }
+  .ex-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 22px 24px;
+    cursor: pointer; transition: all 0.22s; position: relative; overflow: hidden;
+    animation: fu 0.5s ease both;
+  }
+  .ex-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); transform: scaleY(0); transition: transform 0.3s; }
+  .ex-card:hover { border-color: var(--accent); transform: translateX(3px); }
+  .ex-card:hover::before { transform: scaleY(1); }
+  .ex-card.selected { border-color: var(--accent); background: #1e1e2e; }
+  .ex-card.selected::before { transform: scaleY(1); }
+  .ex-card.done { border-color: var(--accent3); opacity: 0.55; cursor: default; }
+  .ex-card.done::before { background: var(--accent3); transform: scaleY(1); }
+  .ex-card.done:hover { transform: none; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+  .card-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .card-name { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .diff-badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px; padding: 3px 9px; border-radius: 2px; flex-shrink: 0; }
+  .d-b { color: var(--accent3); border: 1px solid var(--accent3); }
+  .d-m { color: var(--accent); border: 1px solid var(--accent); }
+  .d-a { color: var(--accent2); border: 1px solid var(--accent2); }
+  .card-desc { margin-top: 8px; color: var(--muted); font-size: 0.82rem; line-height: 1.65; }
+  .card-stats { margin-top: 12px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .cstat { display: flex; flex-direction: column; gap: 2px; }
+  .cstat-l { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .cstat-v { font-size: 0.85rem; font-weight: 700; }
+  .tip-box { margin-top: 10px; font-size: 0.78rem; color: var(--accent3); padding: 7px 12px; background: rgba(74,255,218,0.06); border-radius: 2px; }
+  .chk { position: absolute; top: 14px; right: 14px; width: 22px; height: 22px; border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.3s; }
+  .ex-card.selected .chk { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .ex-card.done .chk { background: var(--accent3); border-color: var(--accent3); color: var(--bg); }
+
+  /* ─── ACTION PANEL ─── */
+  .action-panel { background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--accent); padding: 24px 28px; margin-bottom: 32px; border-radius: 0 0 4px 4px; display: none; animation: fu 0.4s ease both; }
+  .act-name { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+  .act-stats { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 18px; }
+  .act-stat { display: flex; flex-direction: column; gap: 3px; }
+  .act-stat-l { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .act-stat-v { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ─── TIMER ─── */
+  .timer-section { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 28px; text-align: center; display: none; margin-bottom: 24px; animation: fu 0.4s ease both; }
+  .timer-section.on { display: block; }
+  .t-name { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+  .t-ring { position: relative; display: inline-block; margin: 0 auto 20px; }
+  .t-ring svg { transform: rotate(-90deg); }
+  .ring-bg { stroke: var(--border); }
+  .ring-p { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; filter: drop-shadow(0 0 5px rgba(232,255,74,0.5)); }
+  .t-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .t-disp { font-family: 'Space Mono', monospace; font-size: clamp(2.5rem,9vw,4.5rem); font-weight: 700; color: var(--accent); letter-spacing: -2px; text-shadow: 0 0 30px rgba(232,255,74,0.3); line-height: 1; }
+  .t-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .set-ctr { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 20px; }
+  .set-btn { width: 34px; height: 34px; border: 1px solid var(--border); background: none; color: var(--text); font-size: 1.1rem; cursor: pointer; border-radius: 2px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .set-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .set-disp { font-family: 'Space Mono', monospace; font-size: 0.95rem; min-width: 100px; text-align: center; }
+
+  /* ─── BUTTONS ─── */
+  .btn { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 12px 24px; border: none; cursor: pointer; transition: all 0.2s; border-radius: 2px; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-p { background: var(--accent); color: var(--bg); }
+  .btn-p:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,255,74,0.2); }
+  .btn-s { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-s:hover { border-color: var(--muted); transform: translateY(-2px); }
+  .btn-d { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); }
+  .btn-d:hover { background: var(--accent2); color: var(--bg); }
+
+  /* ─── REST OVERLAY ─── */
+  .rest-ov { position: fixed; inset: 0; background: rgba(10,10,15,0.93); z-index: 500; display: none; align-items: center; justify-content: center; flex-direction: column; backdrop-filter: blur(8px); }
+  .rest-ov.on { display: flex; animation: fu 0.3s ease both; }
+  .rest-title { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .rest-num { font-family: 'Space Mono', monospace; font-size: 5.5rem; font-weight: 700; color: var(--accent3); text-shadow: 0 0 50px rgba(74,255,218,0.4); line-height: 1; margin-bottom: 6px; }
+  .rest-hint { color: var(--muted); font-size: 0.82rem; margin-bottom: 24px; }
+
+  /* ─── COMPLETION ─── */
+  .completion { text-align: center; padding: 56px 0 72px; display: none; animation: fu 0.6s ease both; }
+  .completion.on { display: block; }
+  .comp-emoji { font-size: 3.5rem; margin-bottom: 20px; }
+  .comp-title { font-size: 2rem; font-weight: 900; margin-bottom: 10px; }
+  .comp-title span { color: var(--accent); }
+  .comp-sub { color: var(--muted); font-size: 0.9rem; line-height: 1.8; max-width: 440px; margin: 0 auto 32px; }
+  .unlock-box { background: var(--card); border: 1px solid var(--accent); border-radius: 4px; padding: 24px 28px; max-width: 460px; margin: 0 auto 28px; text-align: left; position: relative; overflow: hidden; display: none; }
+  .unlock-box::before { content: 'NEW UNLOCK'; position: absolute; top: 14px; right: 14px; font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--accent); border: 1px solid var(--accent); padding: 2px 7px; }
+  .unlock-glow { position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(232,255,74,0.12) 0%, transparent 70%); }
+  .unlock-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .unlock-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.6; }
+
+  /* ─── SUMMARY STRIP ─── */
+  .summary-strip { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 32px; animation: fu 0.5s ease both; }
+  .sum-item { flex: 1; padding: 14px 10px; text-align: center; border-right: 1px solid var(--border); }
+  .sum-item:last-child { border-right: none; }
+  .sum-val { font-family: 'Space Mono', monospace; font-size: 1.1rem; font-weight: 700; display: block; }
+  .sum-lbl { font-size: 0.68rem; color: var(--muted); letter-spacing: 1px; margin-top: 3px; display: block; }
+
+  /* ─── NOTICE BOX ─── */
+  .notice { background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.3); border-radius: 4px; padding: 14px 18px; font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 28px; animation: fu 0.5s ease both; }
+  .notice strong { color: var(--accent2); }
+
+  hr.div { border: none; border-top: 1px solid var(--border); margin: 32px 0; display: none; }
+
+  /* ─── TOAST ─── */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 12px 18px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; z-index: 1000; transform: translateY(16px); opacity: 0; transition: all 0.3s; max-width: 260px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @keyframes fd { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fu { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+  @media (max-width:580px) {
+    .science-bar,.summary-strip { flex-wrap: wrap; }
+    .sci-item,.sum-item { flex: 1 1 45%; border-right: none; border-bottom: 1px solid var(--border); }
+    .week-bar .day-dot { padding: 8px 2px; font-size: 9px; }
+    .act-stats { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge">科學化 · 核心覺醒計畫 v2</div>
+    <h1>強化你的<em>核心</em></h1>
+    <p class="hero-sub">根據 ACSM、ACE 等運動科學機構建議設計。每週 2–3 次，循序漸進，以達標條件決定升階，不是靠「做完就升」。</p>
+  </div>
+
+  <!-- Science bar -->
+  <div class="science-bar">
+    <div class="sci-item"><span class="sci-val">2–3次</span><span class="sci-lbl">建議每週頻率</span></div>
+    <div class="sci-item"><span class="sci-val">48–72h</span><span class="sci-lbl">肌肉超恢復期</span></div>
+    <div class="sci-item"><span class="sci-val">3組</span><span class="sci-lbl">初中階每動作</span></div>
+    <div class="sci-item"><span class="sci-val">4週</span><span class="sci-lbl">建議最短升階間隔</span></div>
+  </div>
+
+  <!-- Week schedule -->
+  <div id="weekBar" class="week-bar"></div>
+
+  <!-- Notice -->
+  <div class="notice">
+    <strong>⚠️ 重要：不建議每天訓練核心！</strong><br>
+    肌肉在 48–72 小時的「超恢復期」內才能成長。每天訓練反而增加受傷風險。建議安排「訓練日 → 休息日 → 訓練日」的模式，每週 2–3 次即可。
+  </div>
+
+  <!-- Summary strip -->
+  <div class="summary-strip" id="summaryStrip">
+    <div class="sum-item"><span class="sum-val" id="sDone" style="color:var(--accent3)">0</span><span class="sum-lbl">本週完成次數</span></div>
+    <div class="sum-item"><span class="sum-val" id="sWeek" style="color:var(--accent)">0/3</span><span class="sum-lbl">本週訓練天數</span></div>
+    <div class="sum-item"><span class="sum-val" id="sLevel" style="color:var(--accent)">初階</span><span class="sum-lbl">目前等級</span></div>
+    <div class="sum-item"><span class="sum-val" id="sStreak" style="color:var(--accent2)">0週</span><span class="sum-lbl">持續訓練週數</span></div>
+  </div>
+
+  <!-- Phase tabs -->
+  <div class="phase-tabs" id="phaseTabs"></div>
+
+  <!-- Unlock criteria -->
+  <div class="unlock-info" id="unlockInfo"></div>
+
+  <!-- Section header -->
+  <div class="sec-hdr">
+    <div class="sec-label" id="secLabel">— 第一階段</div>
+    <div class="sec-title" id="secTitle">初階核心訓練</div>
+  </div>
+
+  <!-- Exercises grid -->
+  <div class="ex-grid" id="exGrid"></div>
+
+  <!-- Action panel -->
+  <div class="action-panel" id="actPanel">
+    <div class="act-name" id="actName">-</div>
+    <div class="act-stats">
+      <div class="act-stat"><span class="act-stat-l">每組次數</span><span class="act-stat-v" id="actReps">-</span></div>
+      <div class="act-stat"><span class="act-stat-l">組數</span><span class="act-stat-v" id="actSets">-</span></div>
+      <div class="act-stat"><span class="act-stat-l">組間休息</span><span class="act-stat-v" id="actRest">-</span></div>
+      <div class="act-stat"><span class="act-stat-l">目標肌群</span><span class="act-stat-v" style="font-size:0.85rem" id="actMuscle">-</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-p" onclick="startEx()">▶ 開始計時</button>
+      <button class="btn btn-s" onclick="markDone()">✓ 完成此動作</button>
+      <button class="btn btn-d" onclick="clearSel()">✕ 取消</button>
+    </div>
+  </div>
+
+  <!-- Timer section -->
+  <div class="timer-section" id="timerSec">
+    <div class="t-name" id="tName">-</div>
+    <div class="t-ring">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle class="ring-bg" cx="75" cy="75" r="66" stroke-width="5" fill="none"/>
+        <circle class="ring-p" id="ringP" cx="75" cy="75" r="66" stroke-width="5" fill="none" stroke-dasharray="414.7" stroke-dashoffset="0"/>
+      </svg>
+      <div class="t-inner">
+        <div class="t-disp" id="tDisp">00:30</div>
+        <div class="t-sub" id="tSub">保持姿勢</div>
+      </div>
+    </div>
+    <div class="set-ctr">
+      <button class="set-btn" onclick="prevSet()">－</button>
+      <div class="set-disp" id="setDisp">第 1 組 / 3 組</div>
+      <button class="set-btn" onclick="nextSet()">＋</button>
+    </div>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-p" id="tBtn" onclick="toggleTimer()">▶ 開始</button>
+      <button class="btn btn-s" onclick="resetTimer()">↺ 重設</button>
+      <button class="btn btn-d" onclick="markDone()">✓ 完成此動作</button>
+    </div>
+  </div>
+
+  <hr class="div" id="mainDiv">
+
+  <!-- Completion -->
+  <div class="completion" id="compPanel">
+    <div class="comp-emoji">🏆</div>
+    <div class="comp-title">階段<span>完成</span>！</div>
+    <div class="comp-sub" id="compSub">-</div>
+    <div class="unlock-box" id="unlockBox">
+      <div class="unlock-glow"></div>
+      <div class="unlock-name" id="unlockBoxName">-</div>
+      <div class="unlock-desc" id="unlockBoxDesc">-</div>
+    </div>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-p" onclick="goNext()">進入下一階段 →</button>
+      <button class="btn btn-s" onclick="resetPhase()">↺ 再練一次</button>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- Rest overlay -->
+<div class="rest-ov" id="restOv">
+  <div class="rest-title">組間休息</div>
+  <div class="rest-num" id="restNum">60</div>
+  <div class="rest-hint">深呼吸，放鬆身體</div>
+  <button class="btn btn-s" onclick="skipRest()">跳過 →</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   DATA — scientifically grounded exercises
+   Sources: ACSM, ACE, NASM, World Gym TW
+══════════════════════════════════════════ */
+const EX = {
+  beginner: {
+    label: '初階', phase: '第一階段',
+    // Unlock criteria: all 5 done + can plank 30s consistently
+    criteria: [
+      { id: 'c_plank30', text: '棒式能穩定撐 30 秒（不塌腰）', met: false },
+      { id: 'c_bird3',   text: '鳥狗式每側 10 下，脊椎全程不旋轉', met: false },
+      { id: 'c_done',    text: '完成本階段所有動作', met: false },
+    ],
+    list: [
+      {
+        id:'b1', icon:'🐛', name:'死蟲式 (Dead Bug)',
+        desc:'仰躺屈膝，雙手伸直朝天花板。緩慢伸展對側手腳至接近地面，保持下背全程貼地，維持呼吸後換邊。這是深層核心最重要的啟動動作。',
+        reps:'每側 8 下（控制 3 秒下放）', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'腹橫肌、深層核心', difficulty:'初階',
+        tip:'下背離地 = 動作失敗，請先縮小動作幅度。'
+      },
+      {
+        id:'b2', icon:'🐦', name:'鳥狗式 (Bird Dog)',
+        desc:'四足跪姿，同時舉起一隻手臂與對側腿，保持背部平坦、骨盆不傾斜，維持 2–3 秒再換邊。是評估升階條件的關鍵動作。',
+        reps:'每側 10 下', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'豎脊肌、臀中肌、腹橫肌', difficulty:'初階',
+        tip:'想像頭頂有玻璃杯，身體絕對不能傾斜。'
+      },
+      {
+        id:'b3', icon:'🌉', name:'臀橋 (Glute Bridge)',
+        desc:'仰躺屈膝，腳掌踩地。收緊腹部與臀部，將臀部抬至大腿與軀幹成一直線，停頓 2 秒，慢慢放下。重視臀肌啟動，不用腰代償。',
+        reps:'12–15 下', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'臀大肌、核心穩定肌群', difficulty:'初階',
+        tip:'抬起時擠緊臀部，感受臀肌發力，不是腰。'
+      },
+      {
+        id:'b4', icon:'🏔️', name:'肘撐棒式 (Forearm Plank)',
+        desc:'雙肘撐地，肘關節在肩正下方，身體從頭到腳跟一直線。收緊腹部，正常呼吸，不讓腰下塌。目標：能穩定撐 30 秒才算升階。',
+        reps:'目標 30 秒，初期 10–20 秒也可', sets:3, rest:'60 秒', restSec:60, timerSec:30,
+        muscle:'腹橫肌、豎脊肌、肩帶穩定', difficulty:'初階',
+        tip:'這個動作是升階的量化指標，認真累積秒數。'
+      },
+      {
+        id:'b5', icon:'🌊', name:'貓牛式 (Cat-Cow)',
+        desc:'四足跪姿，深吸氣時腰部下凹、頭部上抬（牛式）；吐氣時將背部拱起、下巴收入（貓式）。緩慢控制，活化脊椎各節段。',
+        reps:'10 個循環（慢速）', sets:2, rest:'30 秒', restSec:30, timerSec:0,
+        muscle:'脊椎活動度、核心啟動意識', difficulty:'初階',
+        tip:'每次呼吸配合動作，感受脊椎一節一節的移動。'
+      },
+    ]
+  },
+  intermediate: {
+    label:'中階', phase:'第二階段',
+    criteria: [
+      { id: 'c_sidepl', text: '側棒式每側能撐 20 秒，身體不歪斜', met: false },
+      { id: 'c_mt',     text: '登山者式能做 20 下，核心不鬆', met: false },
+      { id: 'c_done',   text: '完成本階段所有動作', met: false },
+    ],
+    list: [
+      {
+        id:'m1', icon:'⛰️', name:'側棒式 (Side Plank)',
+        desc:'側躺，一側手肘撐地，肘在肩正下方。抬起臀部，身體從頭到腳成一直線，核心收緊。初學者可改屈膝版本。目標：每側 20 秒，是升階條件之一。',
+        reps:'每側 20–30 秒', sets:3, rest:'60 秒', restSec:60, timerSec:25,
+        muscle:'腹內外斜肌、臀中肌（抗側屈）', difficulty:'中階',
+        tip:'臀部不要下沉！這是訓練「抗側屈」能力。'
+      },
+      {
+        id:'m2', icon:'🏔️', name:'登山者式 (Mountain Climber)',
+        desc:'高位棒式（掌撐），交替將膝蓋往胸口方向拉，保持腰部不起伏、核心收緊。速度可由慢（控制型）→快（心肺型）漸進。',
+        reps:'每側 15 下（控制節奏）', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'腹橫肌、屈髖肌、肩帶穩定（抗伸展）', difficulty:'中階',
+        tip:'腰不能一上一下，核心全程繃緊，這才算做到。'
+      },
+      {
+        id:'m3', icon:'🦵', name:'單腿臀橋 (Single Leg Glute Bridge)',
+        desc:'臀橋基礎上，一腳伸直懸空，另一腳支撐。抬起骨盆時保持水平，不能歪斜。抗旋轉能力在這裡受到極大挑戰。',
+        reps:'每側 10–12 下', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'臀大肌、核心抗旋轉、骨盆穩定', difficulty:'中階',
+        tip:'感覺骨盆歪斜？先降回雙腳版本繼續練。'
+      },
+      {
+        id:'m4', icon:'🎯', name:'棒式肩觸 (Plank Shoulder Tap)',
+        desc:'高位棒式，輪流用一手觸碰對側肩膀，並放回。核心主動「鎖住」旋轉，臀部和腰部盡量不晃動。這是量化核心「抗旋轉」能力的好方法。',
+        reps:'每側 12 下', sets:3, rest:'75 秒', restSec:75, timerSec:0,
+        muscle:'核心抗旋轉、肩帶穩定', difficulty:'中階',
+        tip:'雙腳打開比肩寬可提高穩定性，從這裡開始再慢慢併攏。'
+      },
+      {
+        id:'m5', icon:'🌀', name:'俄羅斯轉體 (Russian Twist)',
+        desc:'坐姿，雙腳稍離地，身體往後傾約 45°。雙手合掌左右旋轉軀幹，觸碰兩側地面。動作源自腰部，不是靠晃動慣性。',
+        reps:'每側 12 下', sets:3, rest:'60 秒', restSec:60, timerSec:0,
+        muscle:'腹內外斜肌（旋轉）', difficulty:'中階',
+        tip:'核心旋轉，不是手臂揮動。慢做比快做有效得多。'
+      },
+    ]
+  },
+  advanced: {
+    label:'高階', phase:'第三階段',
+    criteria: [
+      { id: 'c_vup',  text: '腿部上舉能做 10 下，下背不離地', met: false },
+      { id: 'c_ext',  text: '長棒式能穩定撐 30 秒', met: false },
+      { id: 'c_done', text: '完成本階段所有動作', met: false },
+    ],
+    list: [
+      {
+        id:'a1', icon:'🌙', name:'腿部上舉 (Leg Raise)',
+        desc:'仰躺，雙腳伸直。核心收緊，緩緩抬腿至 90°，再慢慢放下，腳不落地繼續。下腰不能離地，下放越慢越有效。這是評估升階條件的關鍵動作。',
+        reps:'10–12 下（放慢 3 秒下降）', sets:4, rest:'90 秒', restSec:90, timerSec:0,
+        muscle:'腹直肌下段、屈髖肌（抗伸展）', difficulty:'高階',
+        tip:'下腰離地代表核心力量不足，先做屈腿版本。'
+      },
+      {
+        id:'a2', icon:'⛰️', name:'長棒式 (Extended Plank)',
+        desc:'棒式基礎上，雙手再往前延伸 25–30 公分。槓桿臂加長，核心承受的力矩大幅增加，是普通棒式的強化版。評估升階：能撐 30 秒。',
+        reps:'目標 30–40 秒', sets:4, rest:'90 秒', restSec:90, timerSec:35,
+        muscle:'腹橫肌、深層核心、前鋸肌', difficulty:'高階',
+        tip:'比普通棒式難非常多！先從 10 秒開始累積。'
+      },
+      {
+        id:'a3', icon:'🎪', name:'蜘蛛人棒式 (Spiderman Plank)',
+        desc:'棒式姿勢，將一側膝蓋緩慢拉向同側手肘，保持核心鎖緊、不旋轉，慢慢還原後換邊。結合抗旋轉與動態穩定兩種能力。',
+        reps:'每側 10–12 下', sets:3, rest:'75 秒', restSec:75, timerSec:0,
+        muscle:'腹斜肌、屈髖肌、核心抗旋轉', difficulty:'高階',
+        tip:'動作越慢越好，不是爆發式的，要感受核心在對抗旋轉。'
+      },
+      {
+        id:'a4', icon:'🌟', name:'中空體撐 (Hollow Body Hold)',
+        desc:'仰躺，手臂伸直過頭，雙腿伸直。同時離地，維持「香蕉形」的身體弧度，下背貼地。這是高水平徒手體操訓練的核心基礎動作。',
+        reps:'保持 20–30 秒', sets:3, rest:'90 秒', restSec:90, timerSec:25,
+        muscle:'腹直肌全段、腰椎屈曲控制', difficulty:'高階',
+        tip:'太難可先從屈膝版本開始，下背必須貼地。'
+      },
+      {
+        id:'a5', icon:'🔥', name:'側棒式轉體 (Side Plank Thread)',
+        desc:'側棒式姿勢，將上方手臂旋轉穿過身體下方（如穿針引線），再轉回。結合側向穩定與旋轉控制，是高階多維度核心挑戰。',
+        reps:'每側 10 下', sets:3, rest:'90 秒', restSec:90, timerSec:0,
+        muscle:'腹內外斜肌、臀中肌、脊椎旋轉控制', difficulty:'高階',
+        tip:'髖部要全程頂起，不要因為旋轉讓臀部下沉。'
+      },
+    ]
+  }
+};
+
+/* ══════════════════════════════════════════  STATE  ══════════════════════════════════════════ */
+let S = {
+  phase: 'beginner',
+  selId: null,
+  completedIds: JSON.parse(localStorage.getItem('cv2_completed') || '[]'),
+  unlockedPhases: JSON.parse(localStorage.getItem('cv2_unlocked') || '["beginner"]'),
+  criteriaMet: JSON.parse(localStorage.getItem('cv2_criteria') || '{}'),
+  trainDays: JSON.parse(localStorage.getItem('cv2_trainDays') || '[]'),
+  weekCount: parseInt(localStorage.getItem('cv2_weeks') || '1'),
+  timerRunning: false, timerInterval: null, timerSec: 0, timerMax: 0,
+  curSet: 1, totalSets: 3,
+  restInterval: null, restSec: 0,
+};
+
+/* ══════════════════════════════════════════  INIT  ══════════════════════════════════════════ */
+function init() {
+  renderWeekBar();
+  renderTabs();
+  renderUnlockInfo();
+  renderExercises();
+  updateSummary();
+}
+
+/* ══════════════════════════════════════════  WEEK BAR  ══════════════════════════════════════════ */
+const WEEK_SCHEDULE = [
+  { label:'週一', type:'train' },
+  { label:'週二', type:'rest' },
+  { label:'週三', type:'train' },
+  { label:'週四', type:'rest' },
+  { label:'週五', type:'train' },
+  { label:'週六', type:'rest' },
+  { label:'週日', type:'rest' },
+];
+function renderWeekBar() {
+  const bar = document.getElementById('weekBar');
+  const today = new Date().getDay(); // 0=Sun
+  const dayMap = [6,0,1,2,3,4,5]; // map JS day to our array index
+  const todayIdx = dayMap[today];
+  bar.innerHTML = WEEK_SCHEDULE.map((d, i) => {
+    const cls = d.type === 'train' ? 'day-dot train' : 'day-dot rest-day';
+    const mark = i === todayIdx ? 'today-mark' : '';
+    const typeLabel = d.type === 'train' ? '訓練' : '休息';
+    return `<div class="${cls} ${mark}"><span class="d-label">${d.label}</span><span class="d-type">${typeLabel}</span></div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════  TABS  ══════════════════════════════════════════ */
+function renderTabs() {
+  const wrap = document.getElementById('phaseTabs');
+  const phases = ['beginner','intermediate','advanced'];
+  const labels = { beginner:'初階', intermediate:'中階', advanced:'高階' };
+  wrap.innerHTML = phases.map(p => {
+    const unlocked = S.unlockedPhases.includes(p);
+    let cls = 'ptab';
+    if (p === S.phase) cls += ' active';
+    else if (unlocked) cls += ' unlocked';
+    const icon = unlocked ? '' : ' 🔒';
+    const onclick = (unlocked && p !== S.phase) ? `onclick="switchPhase('${p}')"` : '';
+    return `<div class="${cls}" ${onclick}>${labels[p]}${icon}</div>`;
+  }).join('');
+
+  const titles = { beginner:'初階核心訓練', intermediate:'中階核心訓練', advanced:'高階核心挑戰' };
+  const labels2 = { beginner:'— 第一階段', intermediate:'— 第二階段', advanced:'— 第三階段' };
+  document.getElementById('secTitle').textContent = titles[S.phase];
+  document.getElementById('secLabel').textContent = labels2[S.phase];
+  const lmap = { beginner:'初階', intermediate:'中階', advanced:'高階' };
+  document.getElementById('sLevel').textContent = lmap[S.phase];
+}
+
+/* ══════════════════════════════════════════  UNLOCK CRITERIA  ══════════════════════════════════════════ */
+function renderUnlockInfo() {
+  const ph = EX[S.phase];
+  const nextPh = { beginner:'intermediate', intermediate:'advanced', advanced:null };
+  const next = nextPh[S.phase];
+  const box = document.getElementById('unlockInfo');
+  if (!next) {
+    box.innerHTML = '<strong>🏆 你已到達最高階段！</strong><br>持續保持每週 2–3 次訓練，鞏固並提升每個動作的品質與秒數。';
+    return;
+  }
+  const nextLabel = { intermediate:'中階', advanced:'高階' }[next];
+  const criteria = ph.criteria;
+
+  // Auto-check "all done" criterion
+  const allDone = ph.list.every(e => S.completedIds.includes(e.id));
+  if (allDone) {
+    if (!S.criteriaMet[S.phase]) S.criteriaMet[S.phase] = {};
+    S.criteriaMet[S.phase]['c_done'] = true;
+    localStorage.setItem('cv2_criteria', JSON.stringify(S.criteriaMet));
+  }
+
+  const metObj = (S.criteriaMet[S.phase] || {});
+  box.innerHTML = `
+    <strong>解鎖${nextLabel}的條件（需全部達成）：</strong>
+    <div class="criteria-list">
+      ${criteria.map(c => {
+        const met = !!metObj[c.id];
+        return `
+          <div class="criteria-item">
+            <div class="crit-check ${met ? 'met' : ''}">${met ? '✓' : ''}</div>
+            <span class="crit-text" style="color:${met ? 'var(--accent3)' : 'var(--muted)'}">${c.text}</span>
+          </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:10px;font-size:0.78rem;color:var(--muted)">
+      💡 升階不是做完就可以，而是動作品質達標後，建議每個階段至少練習 <strong style="color:var(--accent)">4 週</strong> 再升階。
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════  EXERCISES  ══════════════════════════════════════════ */
+function renderExercises() {
+  const grid = document.getElementById('exGrid');
+  const list = EX[S.phase].list;
+  grid.innerHTML = list.map((ex, i) => {
+    const done = S.completedIds.includes(ex.id);
+    const sel = S.selId === ex.id;
+    const dmap = { '初階':'d-b', '中階':'d-m', '高階':'d-a' };
+    return `
+      <div class="ex-card ${done?'done':''} ${sel?'selected':''}" style="animation-delay:${i*0.07}s" onclick="selectEx('${ex.id}')">
+        <div class="chk">${done||sel ? '✓' : ''}</div>
+        <div class="card-top">
+          <span class="card-icon">${ex.icon}</span>
+          <div style="flex:1">
+            <div class="card-name">${ex.name}</div>
+            <div class="card-desc">${ex.desc}</div>
+          </div>
+          <span class="diff-badge ${dmap[ex.difficulty]}">${ex.difficulty}</span>
+        </div>
+        <div class="card-stats">
+          <div class="cstat"><span class="cstat-l">每組</span><span class="cstat-v">${ex.reps}</span></div>
+          <div class="cstat"><span class="cstat-l">組數</span><span class="cstat-v">${ex.sets} 組</span></div>
+          <div class="cstat"><span class="cstat-l">休息</span><span class="cstat-v">${ex.rest}</span></div>
+          <div class="cstat"><span class="cstat-l">目標</span><span class="cstat-v" style="font-size:0.78rem">${ex.muscle}</span></div>
+        </div>
+        ${ex.tip ? `<div class="tip-box">💡 ${ex.tip}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function selectEx(id) {
+  if (S.completedIds.includes(id)) { toast('已完成！若要重做請先重置本階段。'); return; }
+  S.selId = id;
+  const ex = EX[S.phase].list.find(e => e.id === id);
+  document.getElementById('actName').textContent = ex.icon + ' ' + ex.name;
+  document.getElementById('actReps').textContent = ex.reps;
+  document.getElementById('actSets').textContent = ex.sets + ' 組';
+  document.getElementById('actRest').textContent = ex.rest;
+  document.getElementById('actMuscle').textContent = ex.muscle;
+  document.getElementById('actPanel').style.display = 'block';
+  document.getElementById('timerSec').classList.remove('on');
+  clearInterval(S.timerInterval); S.timerRunning = false;
+  renderExercises();
+  document.getElementById('actPanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function clearSel() {
+  S.selId = null;
+  document.getElementById('actPanel').style.display = 'none';
+  renderExercises();
+}
+
+/* ══════════════════════════════════════════  TIMER  ══════════════════════════════════════════ */
+
+// Calculate timer seconds for an exercise:
+// - Static hold (timerSec > 0): use timerSec directly (e.g. plank 30s)
+// - Rep-based (timerSec === 0): parse reps from string and multiply by secPerRep
+// secPerRep = 3s for controlled movements (3 sec eccentric guideline, ACSM)
+function calcTimerSec(ex) {
+  if (ex.timerSec > 0) return ex.timerSec;
+  // Parse first number from reps string, e.g. "每側 8 下" → 8, "12–15 下" → 12
+  const match = ex.reps.match(/(\d+)/);
+  const reps = match ? parseInt(match[1]) : 10;
+  // Bilateral = reps, unilateral ("每側") = reps × 2 sides
+  const isBilateral = /每側/.test(ex.reps);
+  const totalReps = isBilateral ? reps * 2 : reps;
+  // 3 sec per rep: 1s concentric + 2s eccentric (conservative ACSM estimate)
+  return totalReps * 3;
+}
+
+function getTimerLabel(ex) {
+  if (ex.timerSec > 0) return '保持姿勢！';
+  const match = ex.reps.match(/(\d+)/);
+  const reps = match ? parseInt(match[1]) : 10;
+  const isBilateral = /每側/.test(ex.reps);
+  const total = isBilateral ? reps * 2 : reps;
+  return `預計 ${total} 下 × 3 秒 = ${total * 3} 秒參考時間`;
+}
+
+function startEx() {
+  if (!S.selId) return;
+  const ex = EX[S.phase].list.find(e => e.id === S.selId);
+  S.curSet = 1; S.totalSets = ex.sets;
+  document.getElementById('timerSec').classList.add('on');
+  document.getElementById('mainDiv').style.display = 'block';
+  document.getElementById('tName').textContent = ex.icon + ' ' + ex.name;
+  const sec = calcTimerSec(ex);
+  S.timerSec = sec; S.timerMax = sec;
+  document.getElementById('tSub').textContent = getTimerLabel(ex);
+  updateSetDisp(); updateTimerDisp(); setRing(1);
+  document.getElementById('tBtn').textContent = '▶ 開始';
+  S.timerRunning = false;
+  document.getElementById('timerSec').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function toggleTimer() {
+  if (S.timerRunning) {
+    clearInterval(S.timerInterval); S.timerRunning = false;
+    document.getElementById('tBtn').textContent = '▶ 繼續';
+  } else {
+    S.timerRunning = true;
+    document.getElementById('tBtn').textContent = '⏸ 暫停';
+    S.timerInterval = setInterval(() => {
+      if (S.timerSec > 0) {
+        S.timerSec--; updateTimerDisp(); setRing(S.timerSec / S.timerMax);
+      } else {
+        clearInterval(S.timerInterval); S.timerRunning = false;
+        document.getElementById('tBtn').textContent = '▶ 再來一組';
+        toast('時間到！');
+        const ex = EX[S.phase].list.find(e => e.id === S.selId);
+        if (ex && S.curSet < S.totalSets) startRestTimer();
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(S.timerInterval); S.timerRunning = false;
+  const ex = EX[S.phase].list.find(e => e.id === S.selId);
+  if (ex) { const sec = calcTimerSec(ex); S.timerSec = sec; S.timerMax = sec; }
+  updateTimerDisp(); setRing(1);
+  document.getElementById('tBtn').textContent = '▶ 開始';
+}
+
+function updateTimerDisp() {
+  const m = String(Math.floor(S.timerSec / 60)).padStart(2,'0');
+  const s = String(S.timerSec % 60).padStart(2,'0');
+  document.getElementById('tDisp').textContent = m + ':' + s;
+}
+function setRing(r) {
+  document.getElementById('ringP').style.strokeDashoffset = 414.7 * (1 - r);
+}
+function updateSetDisp() {
+  document.getElementById('setDisp').textContent = `第 ${S.curSet} 組 / ${S.totalSets} 組`;
+}
+function nextSet() {
+  if (S.curSet < S.totalSets) startRestTimer();
+  else toast('已是最後一組！完成後請點「完成此動作」。');
+}
+function prevSet() {
+  if (S.curSet > 1) { S.curSet--; updateSetDisp(); }
+}
+
+/* ══════════════════════════════════════════  REST TIMER  ══════════════════════════════════════════ */
+function startRestTimer() {
+  const ex = EX[S.phase].list.find(e => e.id === S.selId);
+  S.restSec = ex ? ex.restSec : 60;
+  document.getElementById('restOv').classList.add('on');
+  document.getElementById('restNum').textContent = S.restSec;
+  clearInterval(S.restInterval);
+  S.restInterval = setInterval(() => {
+    S.restSec--;
+    document.getElementById('restNum').textContent = S.restSec;
+    if (S.restSec <= 0) skipRest();
+  }, 1000);
+}
+function skipRest() {
+  clearInterval(S.restInterval);
+  document.getElementById('restOv').classList.remove('on');
+  S.curSet++;
+  updateSetDisp();
+  // Always reset timer for the next set regardless of type
+  clearInterval(S.timerInterval);
+  S.timerRunning = false;
+  const ex = EX[S.phase].list.find(e => e.id === S.selId);
+  if (ex) {
+    const sec = calcTimerSec(ex);
+    S.timerSec = sec; S.timerMax = sec;
+    updateTimerDisp(); setRing(1);
+    document.getElementById('tSub').textContent = getTimerLabel(ex);
+  }
+  document.getElementById('tBtn').textContent = '▶ 開始';
+  toast(`休息結束！開始第 ${S.curSet} 組`);
+}
+
+/* ══════════════════════════════════════════  MARK DONE  ══════════════════════════════════════════ */
+function markDone() {
+  if (!S.selId) return;
+  if (!S.completedIds.includes(S.selId)) {
+    S.completedIds.push(S.selId);
+    localStorage.setItem('cv2_completed', JSON.stringify(S.completedIds));
+    recordTrainDay();
+    toast('✓ 完成！繼續下一個動作。');
+  }
+  clearInterval(S.timerInterval); S.timerRunning = false;
+  S.selId = null;
+  document.getElementById('actPanel').style.display = 'none';
+  document.getElementById('timerSec').classList.remove('on');
+  document.getElementById('mainDiv').style.display = 'none';
+  renderExercises();
+  renderUnlockInfo();
+  updateSummary();
+  checkPhaseComplete();
+}
+
+function recordTrainDay() {
+  const today = new Date().toDateString();
+  const days = S.trainDays;
+  if (!days.includes(today)) {
+    days.push(today);
+    if (days.length > 21) days.splice(0, days.length - 21);
+    S.trainDays = days;
+    localStorage.setItem('cv2_trainDays', JSON.stringify(days));
+  }
+}
+
+/* ══════════════════════════════════════════  PHASE COMPLETE  ══════════════════════════════════════════ */
+function checkPhaseComplete() {
+  const ph = EX[S.phase];
+  const allDone = ph.list.every(e => S.completedIds.includes(e.id));
+  if (!allDone) return;
+  const panel = document.getElementById('compPanel');
+  panel.classList.add('on');
+  panel.scrollIntoView({ behavior:'smooth' });
+
+  const nextMap = { beginner:'intermediate', intermediate:'advanced', advanced:null };
+  const nextLbl = { beginner:'中階', intermediate:'高階' };
+  const next = nextMap[S.phase];
+
+  const subMap = {
+    beginner: '你完成了初階所有動作！不過別急著升階——請確認升階條件是否都達到，尤其是棒式穩定撐 30 秒。建議在初階至少練滿 4 週後再升階。',
+    intermediate: '中階全部完成！核心的「抗旋轉」和「抗側屈」能力已大幅提升。確認達標條件後，歡迎挑戰高階！',
+    advanced: '🎉 恭喜完成所有階段！你已具備高水平的核心控制力。持續每週 2–3 次保持訓練即可。'
+  };
+  document.getElementById('compSub').textContent = subMap[S.phase];
+
+  if (next && !S.unlockedPhases.includes(next)) {
+    const metObj = S.criteriaMet[S.phase] || {};
+    const allCriteriaMet = EX[S.phase].criteria.every(c => !!metObj[c.id]);
+    if (allCriteriaMet) {
+      S.unlockedPhases.push(next);
+      localStorage.setItem('cv2_unlocked', JSON.stringify(S.unlockedPhases));
+      const box = document.getElementById('unlockBox');
+      box.style.display = 'block';
+      document.getElementById('unlockBoxName').textContent = `🔓 ${nextLbl[S.phase]}訓練已解鎖！`;
+      document.getElementById('unlockBoxDesc').textContent = `所有升階條件均已達成。你可以進入下一個階段，但仍建議偶爾回來鞏固初中階的動作品質。`;
+      renderTabs();
+    } else {
+      const box = document.getElementById('unlockBox');
+      box.style.display = 'block';
+      document.getElementById('unlockBoxName').textContent = `⚠️ 升階條件尚未全部達成`;
+      document.getElementById('unlockBoxDesc').textContent = `動作都做完了，但部分品質條件還未勾選。請繼續練習並在確認達到標準後，手動勾選條件再升階。`;
+    }
+  }
+  renderTabs();
+}
+
+function goNext() {
+  const nextMap = { beginner:'intermediate', intermediate:'advanced', advanced:'beginner' };
+  const next = nextMap[S.phase];
+  if (S.unlockedPhases.includes(next)) { switchPhase(next); window.scrollTo({top:0,behavior:'smooth'}); }
+  else toast('請先達成升階條件！');
+}
+
+function resetPhase() {
+  EX[S.phase].list.forEach(ex => {
+    const i = S.completedIds.indexOf(ex.id);
+    if (i > -1) S.completedIds.splice(i,1);
+  });
+  localStorage.setItem('cv2_completed', JSON.stringify(S.completedIds));
+  document.getElementById('compPanel').classList.remove('on');
+  document.getElementById('unlockBox').style.display = 'none';
+  renderExercises(); renderUnlockInfo(); updateSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('已重置，重新開始！');
+}
+
+/* ══════════════════════════════════════════  SWITCH PHASE  ══════════════════════════════════════════ */
+function switchPhase(p) {
+  S.phase = p; S.selId = null;
+  clearInterval(S.timerInterval); S.timerRunning = false;
+  document.getElementById('actPanel').style.display = 'none';
+  document.getElementById('timerSec').classList.remove('on');
+  document.getElementById('compPanel').classList.remove('on');
+  document.getElementById('mainDiv').style.display = 'none';
+  document.getElementById('unlockBox').style.display = 'none';
+  renderTabs(); renderUnlockInfo(); renderExercises(); updateSummary();
+}
+
+/* ══════════════════════════════════════════  CRITERIA CHECK  ══════════════════════════════════════════ */
+// Allow user to manually mark criteria met (from the unlock info box)
+// We add click handler on the crit-check items
+document.addEventListener('click', function(e) {
+  const item = e.target.closest('.criteria-item');
+  if (!item) return;
+  const box = item.querySelector('.crit-check');
+  const text = item.querySelector('.crit-text');
+  if (!box || box.classList.contains('met')) return; // can't uncheck auto-checks
+  // Find which criteria this is
+  const criteria = EX[S.phase].criteria;
+  const allTexts = document.querySelectorAll('.crit-text');
+  const idx = Array.from(allTexts).indexOf(text);
+  if (idx < 0 || idx >= criteria.length) return;
+  const c = criteria[idx];
+  if (c.id === 'c_done') return; // auto only
+  if (!S.criteriaMet[S.phase]) S.criteriaMet[S.phase] = {};
+  S.criteriaMet[S.phase][c.id] = true;
+  localStorage.setItem('cv2_criteria', JSON.stringify(S.criteriaMet));
+  renderUnlockInfo();
+  toast('✓ 達標條件已確認！');
+});
+
+/* ══════════════════════════════════════════  SUMMARY  ══════════════════════════════════════════ */
+function updateSummary() {
+  const thisWeekDone = getThisWeekTrainDays();
+  const allDone = [...EX.beginner.list, ...EX.intermediate.list, ...EX.advanced.list]
+    .filter(ex => S.completedIds.includes(ex.id)).length;
+  document.getElementById('sDone').textContent = allDone;
+  document.getElementById('sWeek').textContent = thisWeekDone + '/3';
+  document.getElementById('sStreak').textContent = S.weekCount + '週';
+}
+
+function getThisWeekTrainDays() {
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setHours(0,0,0,0);
+  return S.trainDays.filter(d => new Date(d) >= startOfWeek).length;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+init();
+
+// Register Service Worker for offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

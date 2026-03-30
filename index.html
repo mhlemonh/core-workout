@@ -690,6 +690,7 @@ function toggleTimer() {
       } else {
         clearInterval(S.timerInterval); S.timerRunning = false;
         document.getElementById('tBtn').textContent = '▶ 再來一組';
+        soundTimerEnd();
         toast('時間到！');
         const ex = EX[S.phase].list.find(e => e.id === S.selId);
         if (ex && S.curSet < S.totalSets) startRestTimer();
@@ -754,6 +755,7 @@ function skipRest() {
     document.getElementById('tSub').textContent = getTimerLabel(ex);
   }
   document.getElementById('tBtn').textContent = '▶ 開始';
+  soundRestEnd();
   toast(`休息結束！開始第 ${S.curSet} 組`);
 }
 
@@ -764,6 +766,7 @@ function markDone() {
     S.completedIds.push(S.selId);
     localStorage.setItem('cv2_completed', JSON.stringify(S.completedIds));
     recordTrainDay();
+    soundDone();
     toast('✓ 完成！繼續下一個動作。');
   }
   clearInterval(S.timerInterval); S.timerRunning = false;
@@ -907,6 +910,59 @@ function toast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
+
+/* ══════════════════════════════════════════  SOUND  ══════════════════════════════════════════
+   Web Audio API — 不需要音效檔，瀏覽器直接合成
+   iOS 限制：必須在使用者觸碰後才能播放聲音，所以 AudioContext 在第一次點擊時初始化
+══════════════════════════════════════════ */
+let _ctx = null;
+function getAudioCtx() {
+  if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+  // iOS 會把 context 暫停，需要 resume
+  if (_ctx.state === 'suspended') _ctx.resume();
+  return _ctx;
+}
+
+// 單一音調：frequency(Hz), duration(s), startTime(s), volume(0~1), type
+function beep(freq, dur, start, vol = 0.4, type = 'sine') {
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+  gain.gain.setValueAtTime(vol, ctx.currentTime + start);
+  // 淡出避免爆音
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+  osc.start(ctx.currentTime + start);
+  osc.stop(ctx.currentTime + start + dur + 0.05);
+}
+
+// 計時結束：三聲漸高的清脆叮聲
+function soundTimerEnd() {
+  beep(880, 0.15, 0.0, 0.5);   // 叮
+  beep(1046, 0.15, 0.2, 0.5);  // 叮
+  beep(1318, 0.3,  0.4, 0.6);  // 叮～
+}
+
+// 休息結束：一聲溫和的提示音
+function soundRestEnd() {
+  beep(659, 0.12, 0.0, 0.4);
+  beep(880, 0.25, 0.14, 0.5);
+}
+
+// 動作完成：上揚的愉快音效
+function soundDone() {
+  beep(523, 0.1,  0.0,  0.35);
+  beep(659, 0.1,  0.12, 0.35);
+  beep(784, 0.1,  0.24, 0.35);
+  beep(1046, 0.3, 0.36, 0.5);
+}
+
+// 確保 iOS 在第一次觸碰時初始化 AudioContext
+document.addEventListener('touchstart', () => getAudioCtx(), { once: true });
+document.addEventListener('mousedown', () => getAudioCtx(), { once: true });
 
 init();
 
